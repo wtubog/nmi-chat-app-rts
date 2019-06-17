@@ -24,11 +24,8 @@
     "typescript": "^3.5.1"
   },
   "dependencies": {
-    "google-auth-library": "^4.2.0",
-    "redis": "^2.8.0",
     "socket.io": "^2.2.0",
-    "socket.io-redis": "^5.2.0",
-    "striv-rts-client": "https://s3-ap-southeast-1.amazonaws.com/striv-dependencies/striv-rts-client-1.1.0.tgz"
+    "socket.io-redis": "^5.2.0"
   },
   "jest": {
     "verbose": true,

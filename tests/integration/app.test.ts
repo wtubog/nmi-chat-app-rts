@@ -1,10 +1,8 @@
 import * as http from 'http';
 import socketClient from 'socket.io-client';
-import { closeConnection, initializeClient, Session } from 'striv-rts-client';
 import { ClientEvents, ServerEvents } from '../../src/interfaces/events';
 import { initializeServer } from './../../src/app';
 import { terminateAllConnection } from '../../src/utils';
-import * as google from 'google-auth-library';
 jest.mock('google-auth-library');
 const connectClients = (): Promise<
   [
@@ -17,23 +15,13 @@ const connectClients = (): Promise<
 > => {
   return new Promise((resolve, reject) => {
     let connectionCtr = 0;
-    const client1 = socketClient.connect('http://localhost:8000', {
-      query: `chatSession=wilco-1234`
-    });
-    const client2 = socketClient.connect('http://localhost:8000', {
-      query: `chatSession=wilco-1234`
-    });
-    const client3 = socketClient.connect('http://localhost:8000', {
-      query: `chatSession=wilco-1234-session2`
-    });
+    const client1 = socketClient.connect('http://localhost:8000');
+    const client2 = socketClient.connect('http://localhost:8000');
+    const client3 = socketClient.connect('http://localhost:8000');
 
-    const client4 = socketClient.connect('http://localhost:8001', {
-      query: `chatSession=wilco-1234-session2`
-    });
+    const client4 = socketClient.connect('http://localhost:8001');
 
-    const client5 = socketClient.connect('http://localhost:8001', {
-      query: `chatSession=wilco-1234`
-    });
+    const client5 = socketClient.connect('http://localhost:8001');
 
     const tryToResolve = () => {
       if (connectionCtr == 5) {
@@ -74,23 +62,11 @@ describe('Chat App Server', () => {
   let client3: SocketIOClient.Socket;
   let client4: SocketIOClient.Socket;
   let client5: SocketIOClient.Socket;
-  let sesh1: Session;
-  let sesh2: Session;
 
   beforeAll(async () => {
-    initializeClient({ host: 'localhost' });
     // Dual Node oh yeah bitch!
     [wsServer1, server1] = await initializeServer(8000);
     [wsServer2, server2] = await initializeServer(8001);
-    sesh1 = new Session();
-    sesh1.sessionId = 'session:wilco-1234';
-    sesh1.audienceCtr = 0;
-    await sesh1.save();
-
-    sesh2 = new Session();
-    sesh2.sessionId = 'session:wilco-1234-session2';
-    sesh2.audienceCtr = 0;
-    await sesh2.save();
   });
 
   afterAll(done => {
@@ -99,7 +75,6 @@ describe('Chat App Server', () => {
     server1.close();
     wsServer2.close();
     server2.close();
-    closeConnection(true);
     //@ts-ignore
     wsServer1.sockets.adapter.pubClient.end(true);
     //@ts-ignore

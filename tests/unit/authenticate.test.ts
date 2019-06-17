@@ -1,4 +1,3 @@
-import { Session } from 'striv-rts-client';
 import { authenticateHandler } from './../../src/handlers/authenticate';
 import { ClientEvents } from '../../src/interfaces/events';
 
@@ -27,7 +26,6 @@ describe('Authenticate Handler', () => {
   });
 
   it('Should authenticate if a valid username is provided', async () => {
-    jest.spyOn(Session, 'findOne').mockResolvedValue({});
     socket['session'] = 'test-session';
     socket['authenticated'] = false;
     await authenticateHandler(socket, { username: 'wilco' });
@@ -40,7 +38,6 @@ describe('Authenticate Handler', () => {
   });
 
   it('Should not authenticate if an invalid username is provided', async () => {
-    jest.spyOn(Session, 'findOne').mockResolvedValue({});
     socket['session'] = 'test-session';
     socket['authenticated'] = false;
     await authenticateHandler(socket, { username: '' });

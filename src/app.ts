@@ -27,7 +27,7 @@ export const initializeServer = (port: number): Promise<[socketIO.Server, http.S
     io.use(sessionValidator);
 
     io.on('connection', (socket: INMIChatSocket) => {
-
+      console.log('client connected!')
       socket.on(ServerEvents.Authenticate, message => authenticateHandler(socket, message));
       socket.on(ServerEvents.ChatInbound, message =>
         chatInboundHandler(socket, message)
