@@ -1,0 +1,49 @@
+{
+  "name": "striv-rts-chat",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "jest --coverage",
+    "build": "tsc --project tsconfig.json",
+    "dev": "tsc-watch --project tsconfig.json --onSuccess \"node dist/index.js\" "
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jest": "^24.0.13",
+    "@types/redis": "^2.8.13",
+    "@types/socket.io": "^2.1.2",
+    "@types/socket.io-client": "^1.4.32",
+    "@types/socket.io-redis": "^1.0.25",
+    "jest": "^24.8.0",
+    "socket.io-client": "^2.2.0",
+    "ts-jest": "^24.0.2",
+    "tsc": "^1.20150623.0",
+    "tsc-watch": "^2.2.1",
+    "typescript": "^3.5.1"
+  },
+  "dependencies": {
+    "google-auth-library": "^4.2.0",
+    "redis": "^2.8.0",
+    "socket.io": "^2.2.0",
+    "socket.io-redis": "^5.2.0",
+    "striv-rts-client": "https://s3-ap-southeast-1.amazonaws.com/striv-dependencies/striv-rts-client-1.1.0.tgz"
+  },
+  "jest": {
+    "verbose": true,
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "testEnvironment": "node"
+  }
+}
