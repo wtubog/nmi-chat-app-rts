@@ -1,8 +1,8 @@
-import { IStrivSocket } from '../interfaces/striv-socket';
+import { INMIChatSocket } from '../interfaces/nmi-chat-socket';
 import { IChatMessage } from '../interfaces/chat.interface';
 import { ClientEvents, ServerEvents } from '../interfaces/events';
 
-export const chatInboundHandler = (socket: IStrivSocket, message: string) => {
+export const chatInboundHandler = (socket: INMIChatSocket, message: string) => {
   if (
     !('authenticated' in socket) ||
     !socket['authenticated'] ||

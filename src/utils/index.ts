@@ -1,14 +1,9 @@
 import socketIO from 'socket.io';
-import { IStrivSocket } from '../interfaces/striv-socket';
+import { INMIChatSocket } from '../interfaces/nmi-chat-socket';
 import { Session } from 'striv-rts-client';
-export const kickClient = (socket: socketIO.Socket) => {
-  setTimeout(() => {
-    socket.disconnect(true);
-  }, 100);
-};
 
 export const updateClientCount = async (
-  socket: IStrivSocket,
+  socket: INMIChatSocket,
   op: 'incr' | 'decr'
 ) => {
   const sesh = await Session.findOne(socket.session);

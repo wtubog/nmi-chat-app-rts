@@ -1,6 +1,6 @@
 import socketIO from 'socket.io';
 
-export interface IStrivSocket extends socketIO.Socket {
+export interface INMIChatSocket extends socketIO.Socket {
   session?: string;
   authenticated?: boolean;
   username?: string;

@@ -1,7 +1,7 @@
-import { IStrivSocket } from './striv-socket';
+import { INMIChatSocket } from './nmi-chat-socket';
 
 export interface IChatMessage {
-  username: IStrivSocket['username'];
-  avatar: IStrivSocket['avatar'];
+  username: INMIChatSocket['username'];
+  avatar: INMIChatSocket['avatar'];
   message: string;
 }

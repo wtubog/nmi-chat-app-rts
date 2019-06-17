@@ -1,6 +1,5 @@
 export interface IAuthentication {
-  token: string;
-  socialMedia: 'fb' | 'google';
+  username: string
 } 
 
 export interface IAuthenticationResult {

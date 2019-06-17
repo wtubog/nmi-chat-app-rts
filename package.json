@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "test": "jest --coverage",
+    "test": "jest --coverage --maxWorkers=1",
     "build": "tsc --project tsconfig.json",
     "dev": "tsc-watch --project tsconfig.json --onSuccess \"node dist/index.js\" "
   },

@@ -139,75 +139,12 @@ describe('Chat App Server', () => {
     }, 3000);
   });
 
-  it('Should tell Redis how many clients are connected', async () => {
-    const sesh = await Session.findOne('session:wilco-1234');
-    const sesh2 = await Session.findOne('session:wilco-1234-session2');
-    expect(+sesh.audienceCtr).toEqual(3);
-    expect(+sesh2.audienceCtr).toEqual(2);
-  });
-
-  it('Should allow client to authenticate with FB if valid token is provided', done => {
+  it('Should allow client to authenticate if valid username is provided', done => {
     client1.on(ClientEvents.AuthSuccess, e => {
       expect(e.message).toBe('Auth success!');
       done();
     });
-    client1.emit(ServerEvents.Authenticate, {
-      token: 'fb-1234',
-      socialMedia: 'fb'
-    });
-  });
-
-  it('Should not allow client to authenticate with FB if invalid token is provided', done => {
-    client1.on(ClientEvents.AuthFailed, e => {
-      expect(e.message).toBe('Auth failed!');
-      done();
-    });
-    client1.emit(ServerEvents.Authenticate, {
-      token: 'fb-12345666',
-      socialMedia: 'fb'
-    });
-  });
-
-  it('Should allow client to authenticate with Google if valid token is provided', done => {
-    // @ts-ignore
-    google.OAuth2Client.mockImplementation(() => {
-      return {
-        verifyIdToken: () => {
-          return Promise.resolve({
-            getPayload: () => {
-              return { name: 'wilco', picture: 'test' };
-            }
-          });
-        }
-      };
-    });
-    client1.on(ClientEvents.AuthSuccess, e => {
-      expect(e.message).toBe('Auth success!');
-      done();
-    });
-    client1.emit(ServerEvents.Authenticate, {
-      token: 'goog-1234',
-      socialMedia: 'google'
-    });
-  });
-
-  it('Should not  allow client to authenticate with Google if invalid token is provided', done => {
-    //@ts-ignore
-    google.OAuth2Client.mockImplementation(() => {
-      return {
-        verifyIdToken: () => {
-          return null;
-        }
-      };
-    });
-    client1.on(ClientEvents.AuthFailed, e => {
-      expect(e.message).toBe('Auth failed!');
-      done();
-    });
-    client1.emit(ServerEvents.Authenticate, {
-      token: 'goog-1234555555',
-      socialMedia: 'google'
-    });
+    client1.emit(ServerEvents.Authenticate, { username: 'wilco' });
   });
 
   it('Should not allow unauthorized client to send a chat message', done => {
@@ -221,14 +158,11 @@ describe('Chat App Server', () => {
   it("Should allow Client 1 to receive Client 2's message if they belong in the same room ", done => {
     client1.on(ClientEvents.ChatOutbound, e => {
       expect(e.username).toBe('wilco');
-      expect(e.avatar).toBe('test-fb-pic');
+      expect(e.avatar).toBeDefined();
       expect(e.message).toBe('hello');
       done();
     });
-    client2.emit(ServerEvents.Authenticate, {
-      token: 'fb-1234',
-      socialMedia: 'fb'
-    });
+    client2.emit(ServerEvents.Authenticate, { username: 'wilco' });
     client2.emit(ServerEvents.ChatInbound, 'hello');
   });
 
@@ -236,14 +170,11 @@ describe('Chat App Server', () => {
     let outboundHandlerEv = jest.fn();
     client2.on(ClientEvents.ChatOutbound, e => {
       expect(e.username).toBe('wilco');
-      expect(e.avatar).toBe('test-fb-pic');
+      expect(e.avatar).toBeDefined();
       expect(e.message).toBe('hello');
       outboundHandlerEv();
     });
-    client1.emit(ServerEvents.Authenticate, {
-      token: 'fb-1234',
-      socialMedia: 'fb'
-    });
+    client1.emit(ServerEvents.Authenticate, { username: 'wilco' });
     client1.emit(ServerEvents.ChatInbound, 'hello');
     setTimeout(() => {
       expect(outboundHandlerEv).toHaveBeenCalled();
@@ -255,14 +186,11 @@ describe('Chat App Server', () => {
     let outboundHandlerEv = jest.fn();
     client5.on(ClientEvents.ChatOutbound, e => {
       expect(e.username).toBe('wilco');
-      expect(e.avatar).toBe('test-fb-pic');
+      expect(e.avatar).toBeDefined();
       expect(e.message).toBe('hello from node 1');
       outboundHandlerEv();
     });
-    client1.emit(ServerEvents.Authenticate, {
-      token: 'fb-1234',
-      socialMedia: 'fb'
-    });
+    client1.emit(ServerEvents.Authenticate, { username: 'wilco' });
     client1.emit(ServerEvents.ChatInbound, 'hello from node 1');
     setTimeout(() => {
       expect(outboundHandlerEv).toHaveBeenCalled();
@@ -274,90 +202,15 @@ describe('Chat App Server', () => {
     let outboundHandlerEv = jest.fn();
     client1.on(ClientEvents.ChatOutbound, e => {
       expect(e.username).toBe('wilco');
-      expect(e.avatar).toBe('test-fb-pic');
+      expect(e.avatar).toBeDefined();
       expect(e.message).toBe('hello from node 2');
       outboundHandlerEv();
     });
-    client5.emit(ServerEvents.Authenticate, {
-      token: 'fb-1234',
-      socialMedia: 'fb'
-    });
+    client5.emit(ServerEvents.Authenticate, { username: 'wilco' });
     client5.emit(ServerEvents.ChatInbound, 'hello from node 2');
     setTimeout(() => {
       expect(outboundHandlerEv).toHaveBeenCalled();
       done();
     }, 4000);
   });
-
-  it("Should not allow Client 3 to receive Client 1's message if they belong in different rooms", done => {
-    let outboundHandlerEv = jest.fn();
-    client3.on(ClientEvents.ChatOutbound, e => {
-      outboundHandlerEv();
-    });
-    client1.emit(ServerEvents.Authenticate, {
-      token: 'fb-1234',
-      socialMedia: 'fb'
-    });
-    client1.emit(ServerEvents.ChatInbound, 'hello');
-    setTimeout(() => {
-      expect(outboundHandlerEv).not.toHaveBeenCalled();
-      done();
-    }, 4000);
-  });
-
-  it('Should let clients know that a session has ended', async done => {
-    const client1SeshEndFn = jest.fn();
-    const client2SeshEndFn = jest.fn();
-    const client5SeshEndFn = jest.fn();
-
-    client1.on(ClientEvents.SessionEnded, e => {
-      client1SeshEndFn(e);
-    });
-    client2.on(ClientEvents.SessionEnded, e => {
-      client2SeshEndFn(e);
-    });
-    client5.on(ClientEvents.SessionEnded, e => {
-      client5SeshEndFn(e);
-    });
-
-    // Let's kill Session 1
-    await sesh1.delete();
-
-    setTimeout(() => {
-      // Client 1 should be disconnected
-      expect(client1SeshEndFn).toHaveBeenCalledWith({
-        message: 'Session has ended!'
-      });
-      expect(client1.disconnected).toBeTruthy();
-      // Client 2 should be disconnected
-      expect(client2SeshEndFn).toHaveBeenCalledWith({
-        message: 'Session has ended!'
-      });
-      expect(client2.disconnected).toBeTruthy();
-
-      // Client 5 Should be disconnected
-      expect(client5SeshEndFn).toHaveBeenCalledWith({
-        message: 'Session has ended!'
-      });
-      expect(client5.disconnected).toBeTruthy();
-
-      // CLient 3 and Client 4 should still be connection because they are on Session 2
-      expect(client3.disconnected).toBeFalsy();
-      expect(client4.disconnected).toBeFalsy();
-      done();
-    }, 2000);
-  });
-
-  // it('Should disconnect all users within a Node if SIGINT is emitted on the process', async (done) => {
-  //   // Simulating a SIGINT
-  //   terminateAllConnection(wsServer1);
-  //   wsServer1.close()
-  //   server1.close();
-  //   const sesh = await Session.findOne('session:wilco-1234');
-  //   expect(+sesh.audienceCtr).toBe(1);
-  //   expect(client1.disconnected).toBeTruthy();
-  //   expect(client2.disconnected).toBeTruthy();
-  //   expect(client3.disconnected).toBeTruthy();
-  //   done();
-  // });
 });
