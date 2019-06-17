@@ -1,7 +1,4 @@
-import {
-  IAuthentication,
-  IAuthenticationResult
-} from '../interfaces/authentication';
+import { IAuthentication } from '../interfaces/authentication';
 import { ClientEvents } from '../interfaces/events';
 import { INMIChatSocket } from '../interfaces/nmi-chat-socket';
 

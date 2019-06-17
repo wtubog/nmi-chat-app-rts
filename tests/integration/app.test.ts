@@ -2,8 +2,6 @@ import * as http from 'http';
 import socketClient from 'socket.io-client';
 import { ClientEvents, ServerEvents } from '../../src/interfaces/events';
 import { initializeServer } from './../../src/app';
-import { terminateAllConnection } from '../../src/utils';
-jest.mock('google-auth-library');
 const connectClients = (): Promise<
   [
     SocketIOClient.Socket,

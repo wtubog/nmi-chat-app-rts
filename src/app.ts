@@ -23,7 +23,6 @@ export const initializeServer = (port: number): Promise<[socketIO.Server, http.S
     const adapter = redisAdapter({ host: process.env.REDIS_ENDPOINT });
     io.adapter(adapter);
 
-    // Allow clients to connect if session id is valid
     io.use(sessionValidator);
 
     io.on('connection', (socket: INMIChatSocket) => {
@@ -35,9 +34,6 @@ export const initializeServer = (port: number): Promise<[socketIO.Server, http.S
       socket.on(ServerEvents.Disconnect, () => {
       });
     });
-
-    // process.on('SIGINT', () => terminateAllConnection(io));
-    // process.on('SIGTERM', () => terminateAllConnection(io));
 
     server.listen(port, () => {
       console.log(`Chat server listening on port ${port}`);
