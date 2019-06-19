@@ -1,0 +1,29 @@
+sudo: required
+
+# env:
+#   global:
+#     - PATH=$HOME/.local/bin:$PATH
+
+services:
+  - docker
+  - redis-server
+
+branches:
+  only:
+    - master
+
+install:
+  - pip install --user awscli
+  - npm install
+
+before_script:
+  - npm test
+
+script:
+  - $(aws ecr get-login --no-include-email --region ap-southeast-1)
+  # - echo "$DB_USER"
+  - docker build -t nmi-chat .
+  - docker tag nmi-chat-rts:latest 187325535940.dkr.ecr.ap-southeast-1.amazonaws.com/nmi-chat-rts:latest
+  - docker push 187325535940.dkr.ecr.ap-southeast-1.amazonaws.com/nmi-chat-rts:latest
+  # - docker run movies-backend
+  - aws ecs update-service --service nmi-chat-service --cluster nmi-chat-cluster --force-new-deploy

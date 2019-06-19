@@ -3,6 +3,7 @@ version: '3'
 services:
   redis_adapter:
     image: redis:5.0.4-alpine
+    restart: always
   chat_rts:
     build:
       context: .
@@ -11,3 +12,4 @@ services:
       - REDIS_ENDPOINT=redis_adapter
     ports:
       - 8080:8080
+    restart: always
