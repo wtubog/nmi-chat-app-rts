@@ -19,7 +19,7 @@ install:
 before_script:
   - npm test
 
-after_success:
+script:
   - $(aws ecr get-login --no-include-email --region ap-southeast-1)
   # - echo "$DB_USER"
   - docker build -t nmi-chat-rts:latest .
