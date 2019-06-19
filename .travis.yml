@@ -19,10 +19,10 @@ install:
 before_script:
   - npm test
 
-script:
+after_success:
   - $(aws ecr get-login --no-include-email --region ap-southeast-1)
   # - echo "$DB_USER"
-  - docker build -t nmi-chat .
+  - docker build -t nmi-chat-rts:latest .
   - docker tag nmi-chat-rts:latest 187325535940.dkr.ecr.ap-southeast-1.amazonaws.com/nmi-chat-rts:latest
   - docker push 187325535940.dkr.ecr.ap-southeast-1.amazonaws.com/nmi-chat-rts:latest
   # - docker run movies-backend
