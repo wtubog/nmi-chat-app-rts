@@ -13,7 +13,7 @@ export const initializeServer = (port: number): Promise<[socketIO.Server, http.S
     // if our app won't respond to ALB's HTTP, our app will be marked unhealthy and client requests
     // won't be able to reach the server. 
     const server = http.createServer((req,res) => {
-      res.end('hello');
+      res.end('hellos');
     });
     const io = socketIO(server, {
       pingTimeout: 5000,
