@@ -24,7 +24,7 @@
     "typescript": "^3.5.1"
   },
   "dependencies": {
-    "socket.io": "^2.2.0",
+    "socket.io": "^2.5.0",
     "socket.io-redis": "^5.2.0"
   },
   "jest": {
